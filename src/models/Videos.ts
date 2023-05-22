@@ -6,11 +6,19 @@ import { Table, Model, Column, DataType } from "sequelize-typescript";
 })
 export default class Video extends Model {
   @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+    primaryKey: true,
+    autoIncrement: true,
+  })
+  id!: number;
+
+  @Column({
     type: DataType.STRING,
     allowNull: false,
-    primaryKey: true
   })
-  id!: string;
+  youtube_id!: string;
+
   @Column({
     type: DataType.STRING,
     allowNull: false,
@@ -18,7 +26,7 @@ export default class Video extends Model {
   channel_name!: string;
 
   @Column({
-    type: DataType.TEXT,
+    type: DataType.STRING,
     allowNull: false,
   })
   title!: string;

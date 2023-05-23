@@ -4,11 +4,27 @@ import Videos from "../models/Videos";
 //import { CONNREFUSED } from "dns";
 
 const createVideo: RequestHandler = async (req: Request, res: Response) => {
-  let video = await Videos.create({ ...req.body });
-  return res
-    .status(200)
-    .json({ message: "Video created successfully", data: video });
+    const body = {...req.body} 
+
+    //let videos:Videos[]  = [];
+   
+    for (let i = 0; i < 100 ; i++)
+    { 
+      let video = await Videos.create(body);
+      //videos.push(video);
+    }
+      try{
+      res
+      .status(200)
+      .json({ message: "Video created successfully" });
+      }catch(err){
+        res.status(500).json({ message: "Internal server error" });
+      }
+      
+  
 };
+
+
 
 const deleteVideo: RequestHandler = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -46,27 +62,29 @@ const paginationVideos: RequestHandler = async (
 
   const pageNum: number = Number(page);
   const limitVideo: number = Number(limit);
-  const startIndex = (pageNum - 1) * limitVideo;
-  const endIndex = pageNum * limitVideo;
-  let previous = {};
-  let next = {};
+  const startIndex:number = (pageNum - 1) * limitVideo;
+  const endIndex: number = pageNum * limitVideo;
+  let previous : Object = {};
+  let next : Object = {};
   const allVideos: Videos[] = await Videos.findAll();
 
-  const checkEndIndex = allVideos.length % limitVideo === 0 ? 0 : 1;
-  const totalPages = Math.round((allVideos.length / limitVideo) + checkEndIndex);
+  const checkEndIndex: number = allVideos.length % limitVideo === 0 ? 0 : 1;
+  const totalPages: number = Math.floor(
+    allVideos.length / limitVideo + checkEndIndex
+  );
 
-  if(endIndex < allVideos.length){
+  if (endIndex < allVideos.length) {
     next = {
       page: pageNum + 1,
       limit: limitVideo,
     };
   }
 
-  if(startIndex > 0){
+  if (startIndex > 0) {
     previous = {
       page: pageNum - 1,
       limit: limitVideo,
-    }
+    };
   }
 
   const videosPerPage: Videos[] = await Videos.findAll({
@@ -76,7 +94,7 @@ const paginationVideos: RequestHandler = async (
 
   return res
     .status(200)
-    .json({ totalPages, previous, next, data: videosPerPage });
+    .json({ totalPages, totalVideos: allVideos.length ,previous, next, items: videosPerPage });
 };
 
 const getVideoById: RequestHandler = async (req: Request, res: Response) => {
@@ -93,7 +111,7 @@ const updateVideoViews: RequestHandler = async (
 ) => {
   const video = await Videos.findOne({
     where: {
-      id: req.params.id,
+      youtube_id: req.params.id,
     },
   });
 
